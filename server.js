@@ -11,3 +11,5 @@ var http = require('http'),
 	port = 3000;
 
 http_serv.listen(3000, host);
+
+module.exports = http_serv;

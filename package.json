@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/daandvs/otorace",
   "devDependencies": {
-    "chai": "^1.9.1"
+    "chai": "^1.9.1",
+    "supertest": "^0.13.0"
   }
 }
