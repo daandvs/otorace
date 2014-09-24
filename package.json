@@ -1,0 +1,26 @@
+{
+  "name": "otorace",
+  "version": "1.0.0",
+  "description": "let clients race against each other through mobile device",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daandvs/otorace.git"
+  },
+  "keywords": [
+    "otorace"
+  ],
+  "author": "Daan Devos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/daandvs/otorace/issues"
+  },
+  "homepage": "https://github.com/daandvs/otorace",
+  "devDependencies": {
+    "chai": "^1.9.1"
+  }
+}
