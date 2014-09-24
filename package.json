@@ -2,7 +2,7 @@
   "name": "otorace",
   "version": "1.0.0",
   "description": "let clients race against each other through mobile device",
-  "main": "server.js",
+  "main": "Gruntfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -15,13 +15,24 @@
     "otorace"
   ],
   "author": "Daan Devos",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/daandvs/otorace/issues"
   },
   "homepage": "https://github.com/daandvs/otorace",
   "devDependencies": {
     "chai": "^1.9.1",
+    "grunt-concurrent": "^1.0.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha-test": "^0.12.0",
+    "grunt-nodemon": "^0.3.0",
+    "mocha": "^1.21.4",
+    "node-inspector": "^0.7.4",
+    "open": "0.0.5",
     "supertest": "^0.13.0"
+  },
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "load-grunt-tasks": "^0.6.0"
   }
 }
