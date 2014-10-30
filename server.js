@@ -4,9 +4,11 @@
 function handleHTTP(req, res) {
 	if(req.method === 'GET') {
 		if(req.url === '/') {
+			// res.writeHead(200, {'Content-Type': 'text/html'});
+
 			req.addListener('end',function() {
 				req.url = 'index.html';
-				static_files.serve(req,res);
+				static_files.serve(req, res);
 			});
 			req.resume();
 		}else if(req.url === '/scripts/app.js') {

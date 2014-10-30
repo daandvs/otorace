@@ -6,7 +6,8 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: [
-          'server.js'
+          'server.js',
+          'test/server.js'
         ],
         tasks: [
           'mochaTest'
@@ -86,6 +87,19 @@ module.exports = function(grunt) {
         APP_DIR_FOR_CODE_COVERAGE: '../coverage/server/instrument/'
       }
     },
+    clean: {
+      coverage: {
+        src: ['coverage/server']
+      }
+    },
+    copy: {
+      views: {
+        expand: true,
+        flatten: true,
+        src: ['app/index.html'],
+        dest: 'coverage/server/instrument/app'
+      }
+    },
     instrument: {
       files: 'server.js',
       options: {
@@ -114,6 +128,6 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', ['mochaTest', 'watch']);
-  grunt.registerTask('coverage', ['env:coverage', 'instrument', 'mochaTest', 'storeCoverage', 'makeReport']);
+  grunt.registerTask('coverage', ['clean', 'copy', 'env:coverage', 'instrument', 'mochaTest', 'storeCoverage', 'makeReport']);
   grunt.registerTask('serve', ['nodemon:dev']);
 };

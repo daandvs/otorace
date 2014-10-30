@@ -16,14 +16,14 @@
       'force new connection': true
     };
 
-  // describe('/', function() {
-  //   it('respond with html', function(done) {
-  //     request(app)
-  //       .get('/')
-  //       .expect('Content-Type', 'text/html')
-  //       .expect(200, done);
-  //   });
-  // });
+  describe('/', function() {
+    it('respond with html', function(done) {
+      request(app)
+        .get('/')
+        .expect('Content-Type', 'text/html')
+        .expect(200, done);
+    });
+  });
 
   describe('/login', function() {
     it('should fail if no username is provided', function(done) {
