@@ -1,0 +1,21 @@
+{
+  "name": "otorace",
+  "version": "0.0.0",
+  "homepage": "https://github.com/daandvs/otorace",
+  "authors": [
+    "Daan Devos"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "chai": "~1.9.1",
+    "mocha": "~1.21.4",
+    "sinon": "~1.10.3"
+  }
+}

@@ -1,2 +1,4 @@
 node_modules/
 .rebooted
+app/bower_components/
+coverage/

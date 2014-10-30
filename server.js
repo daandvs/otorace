@@ -4,7 +4,12 @@
 function handleHTTP(req, res) {
 	if(req.method === 'GET') {
 		if(req.url === '/') {
-			req.url = 'index.html';
+			req.addListener('end',function() {
+				req.url = 'index.html';
+				static_files.serve(req,res);
+			});
+			req.resume();
+		}else if(req.url === '/scripts/app.js') {
 			static_files.serve(req, res);
 		}else {
 			res.writeHead(403);
@@ -53,9 +58,6 @@ function handleHTTP(req, res) {
 }
 
 function verifyUsername(name) {
-	console.log('verify');
-	console.log(clients);
-
 	if(!clients[name]) {
 		return true;
 	}
@@ -63,21 +65,22 @@ function verifyUsername(name) {
 }
 
 function handleIO(socket) {
-	clients[socket.decoded_token.username] = socket;
+	var username = socket.decoded_token.username;
 
-	socket.on('disconnect', function() {
-		console.log('disconnect');
-		delete clients[socket.decoded_token.username];
+	clients[username] = socket;
 
-	});
-
-	/*socket.broadcast.emit('new user', {});
+	function disconnect() {
+		delete clients[username];
+	}
 
 	function handlePosition(data) {
 		socket.broadcast.emit('position', data);
 	}
 
-	socket.on('position', handlePosition);*/
+	socket.on('disconnect', disconnect);
+	socket.on('position', handlePosition);
+
+	socket.broadcast.emit('user_joined', {username: username});
 }
 
 var http = require('http'),

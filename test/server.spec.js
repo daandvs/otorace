@@ -1,9 +1,12 @@
 (function() {
   'use strict';
 
-  var assert = require('chai').assert,
+  var chai = require('chai'),
+    assert = chai.assert,
+    expect = chai.expect,
     request = require('supertest'),
-    app = require('../server'),
+    requireHelper = require('../lib/require_helper'),
+    app = requireHelper('server'),
 
     io = require('socket.io-client'),
 
@@ -13,14 +16,14 @@
       'force new connection': true
     };
 
-  describe('/', function() {
-    it('respond with html', function(done) {
-      request(app)
-        .get('/')
-        .expect('Content-Type', 'text/html')
-        .expect(200, done);
-    });
-  });
+  // describe('/', function() {
+  //   it('respond with html', function(done) {
+  //     request(app)
+  //       .get('/')
+  //       .expect('Content-Type', 'text/html')
+  //       .expect(200, done);
+  //   });
+  // });
 
   describe('/login', function() {
     it('should fail if no username is provided', function(done) {
@@ -34,8 +37,8 @@
         request(app)
           .post('/login')
           .send({
-            username: 'daan'
-          }).end(function(err, res, body) {
+            username: 'user1'
+          }).end(function(err, res) {
             this.token = res.body.token;
             this.socket1 = io.connect(socketURL, {
               'forceNew': true,
@@ -61,117 +64,70 @@
           assert.equal(err.type, 'UnauthorizedError');
           done();
         });
-
       });
 
-      it('should fail if user with same name tries to connect', function(done) {
-        request(app)
-          .post('/login')
-          .send({
-            username: 'daan'
-          })
-          .expect(401, done);
-      });
-
-      it('should inform other clients when disconnected', function(done) {
-        this.socket1.on('disconnect', function(err) {
-          //setTimeout(function() {
-            done();
-          //}, 500);
-        });
-
+      after(function() {
         this.socket1.disconnect();
-      });
-
-      it('have the name available', function(done) {
-        request(app)
-          .post('/login')
-          .send({
-            username: 'daan'
-          })
-          .expect(200, done);
       });
     });
 
-    /*describe('interaction between clients', function() {
+    describe('interaction between clients', function() {
 
       before(function(done) {
         request(app)
           .post('/login')
           .send({
-            username: 'bob'
+            username: 'user3'
           }).end(function(err, res, body) {
             this.token = res.body.token;
+
+            this.socket1 = io.connect(socketURL, {
+              'forceNew': true,
+              'query': 'token=' + this.token
+            });
+
+          }.bind(this));
+
+        request(app)
+          .post('/login')
+          .send({
+            username: 'user4'
+          }).end(function(err, res, body) {
+            this.token = res.body.token;
+
+            this.socket2 = io.connect(socketURL, {
+              'forceNew': true,
+              'query': 'token=' + this.token
+            });
+
             done();
           }.bind(this));
       });
 
-      it('should succesfully connect a second user', function(done) {
-        var socket = io.connect(socketURL, {
-          'forceNew': true,
-          'query': 'token=' + this.token
-        });
-
-        socket.on('connect', function() {
+      it('should inform other clients connection', function(done) {
+        this.socket1.on('user_joined', function(data) {
+          expect(data.username).to.equal('user4');
           done();
         });
       });
 
+      it('should receive x and y positions', function(done) {
+        this.socket1.emit('position', {
+          x: 200,
+          y: 300
+        });
 
-    });*/
+        this.socket2.on('position', function(data) {
+          assert.equal(data.x, 200);
+          assert.equal(data.y, 300);
+          done();
+        });
+      });
+
+      after(function() {
+        this.socket1.disconnect();
+        this.socket2.disconnect();
+      });
+    });
   });
-
-  /*describe('socket.io', function() {
-    before(function() {
-      this.client1 = io.connect(socketURL, options);
-      this.client2 = io.connect(socketURL, options);
-      this.client3 = io.connect(socketURL, options);
-
-      this.client1.on('connect', function(data) {
-        this.client1.emit('user', {
-          name: 'daan'
-        });
-      }.bind(this));
-
-      this.client2.on('connect', function(data) {
-        this.client2.emit('user', {
-          name: 'jos'
-        });
-      }.bind(this));
-
-      this.client3.on('connect', function(data) {
-        this.client3.emit('user', {
-          name: 'jos'
-        });
-      }.bind(this));
-    });
-
-    it('should refuse connection when username is already taken', function(done) {
-      this.client3.on('new user', function(data) {
-
-        done();
-      });
-
-
-    });
-
-    it('should inform other clients connection', function(done) {
-      this.client1.on('new user', function(data) {
-        done();
-      });
-    });
-
-    it('should receive x and y positions', function(done) {
-      this.client1.emit('position', {
-        x: 200,
-        y: 300
-      });
-
-      this.client2.on('position', function(data) {
-        assert.equal(data.x, 200);
-        assert.equal(data.y, 300);
-        done();
-      });
-    });
-  });*/
 })();

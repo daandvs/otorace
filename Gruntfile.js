@@ -6,18 +6,27 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: [
-          '{,*/}*.js'
+          'server.js'
         ],
         tasks: [
           'mochaTest'
         ]
+      },
+      client: {
+        files: [
+          'app/index.html',
+          'app/scripts/**/*.js'
+        ],
+        options: {
+          livereload: 3000
+        }
       },
       server: {
         files: [
           '.rebooted'
         ],
         options: {
-          livereload: true
+          livereload: 3000
         }
       }
     },
@@ -53,6 +62,11 @@ module.exports = function(grunt) {
         }
       }
     },
+    karma: {
+      unit: {
+        configFile: 'karma.conf.js'
+      }
+    },
     mochaTest: {
       test: {
         options: {
@@ -60,9 +74,46 @@ module.exports = function(grunt) {
         },
         src: ['test/server.spec.js']
       }
+    },
+
+    /* *********************************************
+       *********************************************
+       ** code coverage server
+       *********************************************
+       ********************************************* */
+    env: {
+      coverage: {
+        APP_DIR_FOR_CODE_COVERAGE: '../coverage/server/instrument/'
+      }
+    },
+    instrument: {
+      files: 'server.js',
+      options: {
+        lazy: true,
+        basePath: 'coverage/server/instrument/'
+      }
+    },
+    storeCoverage: {
+      options: {
+        dir: 'coverage/server/reports'
+      }
+    },
+    makeReport: {
+      src: 'coverage/server/reports/**/*.json',
+      options: {
+        type: 'lcov',
+        dir: 'coverage/server/reports',
+        print: 'detail'
+      }
     }
+    /* *********************************************
+       *********************************************
+       ** end code coverage server
+       *********************************************
+       ********************************************* */
   });
 
   grunt.registerTask('default', ['mochaTest', 'watch']);
+  grunt.registerTask('coverage', ['env:coverage', 'instrument', 'mochaTest', 'storeCoverage', 'makeReport']);
   grunt.registerTask('serve', ['nodemon:dev']);
 };
