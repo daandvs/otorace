@@ -7,7 +7,7 @@ module.exports = function(grunt) {
       scripts: {
         files: [
           'server.js',
-          'test/server.js'
+          'test/server.spec.js'
         ],
         tasks: [
           'mochaTest'
