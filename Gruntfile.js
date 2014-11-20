@@ -5,6 +5,9 @@ module.exports = function(grunt) {
   grunt.initConfig({
     watch: {
       scripts: {
+        options: {
+          spawn: false
+        },
         files: [
           'server.js',
           'test/server.spec.js'
@@ -71,7 +74,9 @@ module.exports = function(grunt) {
     mochaTest: {
       test: {
         options: {
-          reporter: 'spec'
+          reporter: 'spec',
+          clearRequireCache: true,
+          timeout: 15000
         },
         src: ['test/server.spec.js']
       }
@@ -101,7 +106,10 @@ module.exports = function(grunt) {
       }
     },
     instrument: {
-      files: 'server.js',
+      files: [
+        'server.js',
+        'lib/socket.js'
+      ],
       options: {
         lazy: true,
         basePath: 'coverage/server/instrument/'
