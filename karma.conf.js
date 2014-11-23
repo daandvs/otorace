@@ -6,8 +6,8 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai', 'sinon'],
 
     files: [
-      'app/scripts/*.js',
-      'test/app/*.js'
+      'app/scripts/**/*.js',
+      'test/app/**/*.js'
     ],
 
     reporters: ['progress', 'coverage'],

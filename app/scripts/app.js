@@ -1,13 +1,13 @@
-var Otorace = (function() {
+(function(global) {
   'use strict';
 
   function handleSubmit() {
-    
+
   }
 
   var publicAPI = {
     submit: handleSubmit
   };
 
-  return publicAPI;
-})();
+  global.Otorace = publicAPI;
+})(this);

@@ -44,7 +44,7 @@ module.exports = function(grunt) {
     },
     nodemon: {
       dev: {
-        script: 'server.js',
+        script: 'app.js',
         options: {
           callback: function(nodemon) {
             //open browser on intial start
@@ -75,8 +75,8 @@ module.exports = function(grunt) {
       test: {
         options: {
           reporter: 'spec',
-          clearRequireCache: true,
-          timeout: 15000
+          clearRequireCache: true/*,
+          timeout: 15000*/
         },
         src: ['test/server.spec.js']
       }

@@ -76,7 +76,6 @@ function handleStop(callback) {
   socketio.close();
 }
 
-
 var http = require('http'),
   http_serv,
 

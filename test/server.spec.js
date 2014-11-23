@@ -59,10 +59,9 @@
 
     describe('/login', function() {
       it('should fail if no username is provided', function(done) {
-        app.post('/login')
+        app
+          .post('/login')
           .expect(401, done);
-
-
       });
 
 
@@ -70,7 +69,7 @@
         app
           .post('/login')
           .send({
-            username: 'xx'
+            username: 'user'
           })
           .expect('Content-Type', 'application/json')
           .end(function(err, res) {
@@ -87,7 +86,7 @@
           this.clock = sinon.useFakeTimers();
 
           this.user = {
-            username: 'user1'
+            username: 'user'
           };
 
           this.token = '';
@@ -113,84 +112,37 @@
         it('should return web token', function() {
           chai.assert.equal(this.token, 'this is the token');
         });
-
-        // it('should return 401 if username already exist',
-        //   function(done) {
-        //     var username = {
-        //       username: 'user1'
-        //     };
-        //
-        //     request(app)
-        //       .post('/login')
-        //       .send(username)
-        //       .expect(401, done);
-        //   });
-
-
-
-        //
-        // after(function() {
-        //   this.socket1.disconnect();
-        // });
       });
 
       describe('socket.io', function() {
 
-        // before(function(done) {
-        //   this.user = {
-        //     username: 'socket_1'
-        //   };
-        //
-        //   this.socket = undefined;
-        //
-        //   request(app)
-        //     .post('/login')
-        //     .send(this.user)
-        //     .end(function(err, res) {
-        //       this.socket = createSocket(res.body.token);
-        //       done();
-        //     }.bind(this));
-        // });
-
         it('should return 401 if username already exist', function(done) {
-            var username = {
-              username: 'user2'
+          var username = {
+            username: 'user2'
+          };
 
-            };
+          app
+            .post('/login')
+            .send(username)
+            .end(function(err, res) {
+              var mysocket = createSocket(res.body.token);
 
-            // var request_1 = request(app);
+              mysocket.on('connect', function() {
+                app
+                  .post('/login')
+                  .send(username)
+                  .expect(401)
+                  .end(function(err, res) {
+                    if(err) {
+                      return done(err);
+                    }
 
-            app
-              .post('/login')
-              .send(username)
-              .end(function(err, res) {
-                var mysocket = createSocket(res.body.token);
-
-
-                mysocket.on('connect', function() {
-
-
-
-
-                  app
-                    .post('/login')
-                    .send(username)
-
-                    .expect(401)
-                    .end(function(err, res) {
-                      if(err) {
-                        return done(err);
-                      }
-
-                      mysocket.disconnect();
-                      done();
-
-
-                    });
-                });
+                    mysocket.disconnect();
+                    done();
+                  });
               });
-          });
-
+            });
+        });
 
         it('should have user available again after disconnect', function(done) {
           var user = {
@@ -201,31 +153,33 @@
             .post('/login')
             .send(user)
             .end(function(err, res) {
-              // console.log('token ' + res.body.token);
+              if(err) {
+                return done(err);
+              }
 
               var socket_1 = createSocket(res.body.token);
 
               socket_1.on('connect', function() {
+                // socket_1.emit('logout');
                 socket_1.disconnect();
 
+
                 app
-                    .post('/login')
-                    .send(user)
+                  .post('/login')
+                  .send(user)
 
-                    .end(function(err, res) {
+                  .end(function(err, res) {
 
-                      var socket_2 = createSocket(res.body.token);
-                      socket_2.on('connect', function() {
-                        socket_2.disconnect();
-                        done();
-                      });
+                    var socket_2 = createSocket(res.body.token);
+                    socket_2.on('connect', function() {
+                      // socket_2.emit('logout');
+                      socket_2.disconnect();
+                      done();
                     });
-
-
-
+                  });
               });
             })
-          });
+        });
 
         it('should fail to connect without token', function(done) {
           var socket = createSocket('false_token');
@@ -238,67 +192,94 @@
       });
 
 
-      // describe('interaction between clients', function() {
-      //
-      //   before(function(done) {
-      //     request(app)
-      //       .post('/login')
-      //       .send({
-      //         username: 'user3'
-      //       }).end(function(err, res, body) {
-      //         this.token = res.body.token;
-      //
-      //         this.socket1 = io.connect(socketURL, {
-      //           'forceNew': true,
-      //           'query': 'token=' + this.token
-      //         });
-      //
-      //       }.bind(this));
-      //
-      //     request(app)
-      //       .post('/login')
-      //       .send({
-      //         username: 'user4'
-      //       }).end(function(err, res, body) {
-      //         this.token = res.body.token;
-      //
-      //         this.socket2 = io.connect(socketURL, {
-      //           'forceNew': true,
-      //           'query': 'token=' + this.token
-      //         });
-      //
-      //         done();
-      //       }.bind(this));
-      //   });
-      //
-      //   it('should inform other clients connection', function(done) {
-      //     this.socket1.on('user_joined', function(data) {
-      //       expect(data.username).to.equal('user4');
-      //       done();
-      //     });
-      //   });
-      //
-      //   it('should receive x and y positions', function(done) {
-      //     this.socket1.emit('position', {
-      //       x: 200,
-      //       y: 300
-      //     });
-      //
-      //     this.socket2.on('position', function(data) {
-      //       assert.equal(data.x, 200);
-      //       assert.equal(data.y, 300);
-      //       done();
-      //     });
-      //   });
-      //
-      //   after(function() {
-      //     this.socket1.disconnect();
-      //     this.socket2.disconnect();
-      //   });
-      // });
+      describe('interaction between clients', function() {
 
+        before(function(done) {
+          this.jwt_token_1 = '';
+          this.jwt_token_2 = '';
+
+          app
+          .post('/login')
+          .send({
+            username: 'interaction_user_1'
+          })
+          .expect(200)
+          .end(function(err, res, body) {
+            if(err) {
+              done(err);
+            }
+
+            this.jwt_token_1 = res.body.token;
+          }.bind(this));
+
+          app
+          .post('/login')
+          .send({
+            username: 'interaction_user_2'
+          })
+          .expect(200)
+          .end(function(err, res, body) {
+            if(err) {
+              done(err);
+            }
+
+            this.jwt_token_2 = res.body.token;
+            done();
+
+          }.bind(this));
+        });
+
+        beforeEach(function() {
+          this.socket1 = io.connect(socketURL, {
+            'forceNew': true,
+            'query': 'token=' + this.jwt_token_1
+          });
+
+          this.socket2 = io.connect(socketURL, {
+            'forceNew': true,
+            'query': 'token=' + this.jwt_token_2
+          });
+        });
+
+        afterEach(function() {
+          this.socket1.disconnect();
+          this.socket2.disconnect();
+        });
+
+        it('should inform other clients connection', function(done) {
+          this.socket1.on('user_joined', function(data) {
+            expect(data.username).to.equal('interaction_user_2');
+            done();
+          });
+        });
+
+        it('should inform other clients disconnection', function(done) {
+
+          this.socket2.on('connect', function() {
+            this.socket2.on('user_leave', function(data) {
+              expect(data.username).to.equal('interaction_user_1');
+              done();
+            });
+
+            this.socket1.disconnect();
+          }.bind(this));
+        });
+
+        it('should receive x and y positions', function(done) {
+          this.socket2.on('connect', function() {
+            this.socket2.on('position', function(data) {
+              assert.equal(data.x, 200);
+              assert.equal(data.y, 300);
+              done();
+            });
+
+            this.socket1.emit('position', {
+              x: 200,
+              y: 300
+            });
+          }.bind(this));
+        });
+      });
     });
   });
-
-
 })();
