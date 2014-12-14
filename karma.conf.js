@@ -6,6 +6,9 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai', 'sinon'],
 
     files: [
+      'app/scripts/core/core.sandbox.js',
+      'app/scripts/core/modules/*.js',
+
       'app/scripts/**/*.js',
       'test/app/**/*.js'
     ],

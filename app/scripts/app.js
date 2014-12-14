@@ -1,13 +1,13 @@
 (function(global) {
-  'use strict';
-
-  function handleSubmit() {
-
+  function handleInit() {
+    CoreSandbox([
+      'core_communicator'
+    ], function(core) {
+      global.Core = core;
+    });
   }
 
-  var publicAPI = {
-    submit: handleSubmit
+  global.App = {
+    initialize: handleInit
   };
-
-  global.Otorace = publicAPI;
 })(this);
