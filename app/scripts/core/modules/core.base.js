@@ -37,12 +37,12 @@ CoreSandbox.modules.core_base = function(box) {
     return false;
   }
 
-  function handleStart() {
+  function handleStartStop(isStart) {
     var module;
     for(var i = 0; i < modules.length; i++) {
       module = modules[i];
 
-      if(!module.instance) {
+      if(isStart && !module.instance) {
         module.instance = module.func() || {};
 
         if(typeof module.instance.initialize !== 'function') {
@@ -50,16 +50,7 @@ CoreSandbox.modules.core_base = function(box) {
         }
 
         module.instance.initialize();
-      }
-    }
-  }
-
-  function handleStop() {
-    var module;
-    for(var i = 0; i < modules.length; i++) {
-      module = modules[i];
-
-      if(module.instance) {
+      }else if(!isStart && module.instance) {
         if(typeof module.instance.destroy !== 'function') {
           throw(/no destroy found on module function/);
         }
@@ -68,6 +59,14 @@ CoreSandbox.modules.core_base = function(box) {
         module.instance = undefined;
       }
     }
+  }
+
+  function handleStart() {
+    handleStartStop(true);
+  }
+
+  function handleStop() {
+    handleStartStop(false);
   }
 
   box.module = handleModule;
